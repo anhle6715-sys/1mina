@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý điểm sinh viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4 md:p-8">
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold mb-8 text-center text-blue-600">Quản lý điểm sinh viên</h1>
+        
+        <!-- Form Nhập Liệu -->
+        <div class="bg-blue-50 p-6 rounded-lg mb-8 border border-blue-100">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Họ và Tên</label>
+                    <input type="text" id="name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Nguyễn Văn A">
+                </div>
+                <div class="lg:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mã SV</label>
+                    <input type="text" id="studentId" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="SV001">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Điểm Toán</label>
+                    <input type="number" id="math" min="0" max="10" step="0.1" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Điểm Văn</label>
+                    <input type="number" id="lit" min="0" max="10" step="0.1" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Điểm Anh</label>
+                    <input type="number" id="eng" min="0" max="10" step="0.1" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="addStudent()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded shadow transition duration-200 ease-in-out transform hover:-translate-y-0.5">
+                    Thêm Sinh Viên
+                </button>
+            </div>
+        </div>
+
+        <!-- Bảng Danh Sách -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200" id="scoreTable">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left">STT</th>
+                        <th class="py-3 px-6 text-left">Mã SV</th>
+                        <th class="py-3 px-6 text-left">Họ Tên</th>
+                        <th class="py-3 px-6 text-center">Toán</th>
+                        <th class="py-3 px-6 text-center">Văn</th>
+                        <th class="py-3 px-6 text-center">Anh</th>
+                        <th class="py-3 px-6 text-center font-bold">ĐTB</th>
+                        <th class="py-3 px-6 text-center">Xếp Loại</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-600 text-sm font-light">
+                    <!-- Dữ liệu sẽ được thêm vào đây -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let count = 0;
+
+        function addStudent() {
+            // Lấy giá trị từ form
+            const name = document.getElementById('name').value.trim();
+            const id = document.getElementById('studentId').value.trim();
+            const math = parseFloat(document.getElementById('math').value);
+            const lit = parseFloat(document.getElementById('lit').value);
+            const eng = parseFloat(document.getElementById('eng').value);
+
+            // Kiểm tra dữ liệu hợp lệ
+            if (!name || !id || isNaN(math) || isNaN(lit) || isNaN(eng)) {
+                alert('Vui lòng nhập đầy đủ thông tin!');
+                return;
+            }
+
+            if (math < 0 || math > 10 || lit < 0 || lit > 10 || eng < 0 || eng > 10) {
+                alert('Điểm phải nằm trong khoảng từ 0 đến 10!');
+                return;
+            }
+
+            // Tính toán
+            const avg = (math + lit + eng) / 3;
+            const avgDisplay = avg.toFixed(2);
+            
+            let rank = 'Trung bình';
+            let rankColor = 'bg-gray-200 text-gray-600'; // Mặc định
+            
+            if (avg >= 8.0) {
+                rank = 'Giỏi';
+                rankColor = 'bg-green-200 text-green-700';
+            } else if (avg >= 6.5) {
+                rank = 'Khá';
+                rankColor = 'bg-blue-200 text-blue-700';
+            }
+
+            // Thêm vào bảng
+            count++;
+            const tableBody = document.getElementById('scoreTable').getElementsByTagName('tbody')[0];
+            const newRow = tableBody.insertRow();
+            newRow.className = "border-b border-gray-200 hover:bg-gray-50";
+
+            newRow.innerHTML = `
+                <td class="py-3 px-6 text-left whitespace-nowrap font-medium">${count}</td>
+                <td class="py-3 px-6 text-left">${id}</td>
+                <td class="py-3 px-6 text-left font-medium text-gray-800">${name}</td>
+                <td class="py-3 px-6 text-center">${math}</td>
+                <td class="py-3 px-6 text-center">${lit}</td>
+                <td class="py-3 px-6 text-center">${eng}</td>
+                <td class="py-3 px-6 text-center font-bold text-gray-800">${avgDisplay}</td>
+                <td class="py-3 px-6 text-center">
+                    <span class="${rankColor} py-1 px-3 rounded-full text-xs font-bold uppercase">${rank}</span>
+                </td>
+            `;
+
+            // Reset form và focus lại vào ô tên
+            document.getElementById('name').value = '';
+            document.getElementById('studentId').value = '';
+            document.getElementById('math').value = '';
+            document.getElementById('lit').value = '';
+            document.getElementById('eng').value = '';
+            document.getElementById('name').focus();
+        }
+    </script>
+</body>
+</html>
